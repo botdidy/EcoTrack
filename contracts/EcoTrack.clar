@@ -1,4 +1,4 @@
-;; Solar Credits Contract
+;; Ecotrack Contract
 ;; This contract allows users to earn and track solar energy credits
 
 ;; Constants
