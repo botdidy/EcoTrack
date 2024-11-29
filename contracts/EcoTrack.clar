@@ -1,5 +1,5 @@
 ;; Ecotrack Contract
-;; This contract allows users to earn and track solar energy credits
+;; This is a contract that allows users to earn and track solar energy credits
 
 ;; Constants
 (define-constant ERR-INVALID-USER (err u100))
