@@ -51,3 +51,14 @@ A read-only function to retrieve the current owner of the contract.
 - `MAX-CREDITS`: The maximum allowable credits for any user (`2^128 - 1`).
 
 EcoTrack promotes green practices by tracking and incentivizing sustainable actions on the blockchain.
+
+Future Updates
+The following features are planned for future versions of the EcoTrack contract:
+
+Credit Expiration: Support for credit expiration to encourage timely usage.
+Rewards Marketplace: An integrated marketplace for redeeming credits for rewards.
+Group Credit Pools: A system for users to pool credits for collective benefits.
+Dynamic Credit Earning Rates: Variable earning rates based on user activity or environmental factors.
+Credit History Tracking: Detailed transaction history for improved transparency.
+Governance Mechanism: A decentralized voting system for managing contract updates.
+Integration with External Data Sources: Linking credit earning to real-world environmental data.
