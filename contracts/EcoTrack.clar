@@ -1,32 +1,44 @@
-(define-data-var carbon-footprint u128 0)
+;; Ecotrack Contract
+;; This is a contract that allows users to earn and track solar energy credits
 
-(define-public (calculate-carbon-footprint (transaction-size u128) (transaction-type (string-ascii 50)))
-  (begin
-    ;; Define carbon emission factors (in grams of CO2 per unit of transaction size)
-    (define carbon-factor 0.02) ; Assume 0.02g of CO2 per transaction unit size
-    (define base-emission 100)  ; Base emission for each transaction type (in grams of CO2)
-    
-    ;; Calculate carbon footprint based on transaction size and type
-    (define transaction-emission (* carbon-factor transaction-size))
-    (define type-emission (if (is-eq transaction-type "smart-contract")
-                              (* base-emission 2)
-                              base-emission))
+;; Constants
+(define-constant ERR-INVALID-USER (err u100))
+(define-constant ERR-CREDIT-OVERFLOW (err u101))
+(define-constant ERR-INSUFFICIENT-BALANCE (err u102))
+(define-constant MAX-CREDITS u340282366920938463463374607431768211455) ;; (2^128 - 1)
 
-    ;; Calculate total carbon footprint
-    (define total-footprint (+ transaction-emission type-emission))
+;; Define the map to store solar credits for each user
+(define-map solar-credits principal uint)
 
-    ;; Update the global carbon footprint variable
-    (ok (var-set carbon-footprint total-footprint))
+;; Function to earn a solar credit
+(define-public (earn-solar-credit)
+  (let
+    (
+      (caller tx-sender)
+      (current-credits (default-to u0 (map-get? solar-credits caller)))
+    )
+    (asserts! (< current-credits MAX-CREDITS) ERR-CREDIT-OVERFLOW)
+    (ok (map-set solar-credits caller (+ current-credits u1)))
   )
 )
 
-(define-public (get-carbon-footprint)
-  (ok (var-get carbon-footprint))
+;; Function to get the solar credits for a user
+(define-read-only (get-solar-credits (user principal))
+  (ok (default-to u0 (map-get? solar-credits user)))
 )
 
-(define-public (set-carbon-footprint (new-footprint u128))
-  (begin
-    (var-set carbon-footprint new-footprint)
+;; Function to transfer credits between users
+(define-public (transfer-credits (recipient principal) (amount uint))
+  (let
+    (
+      (sender tx-sender)
+      (sender-balance (default-to u0 (map-get? solar-credits sender)))
+    )
+    (asserts! (not (is-eq sender recipient)) ERR-INVALID-USER)
+    (asserts! (<= amount sender-balance) ERR-INSUFFICIENT-BALANCE)
+    (map-set solar-credits sender (- sender-balance amount))
+    (map-set solar-credits recipient (+ (default-to u0 (map-get? solar-credits recipient)) amount))
     (ok true)
   )
 )
+
